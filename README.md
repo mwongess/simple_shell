@@ -9,8 +9,3 @@ A simple UNIX command interpreter written as part of the low-level programming a
 * Amos Mwongela<[cm-amos](https://github.com/cm-amos)>
 
 
-
-## Acknowledgements :pray:
-
-**Shellby** emulates basic functionality of the **sh** shell. This README borrows form the Linux man pages [sh(1)](https://linux.die.net/man/1/sh) and [dash(1)](https://linux.die.net/man/1/dash).
-
