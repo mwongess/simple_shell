@@ -5,7 +5,8 @@
 .SH SYNOPSIS
 .B ./hsh
 .SH DESCRIPTION
-This program is simple shell that has been made by Holberton guidelines. It contains basic features and functions found in other shell programs.
+This program is simple shell.
+It contains basic features and functions found in other shell programs.
 .SS Overview
 This shell is an executable that reads lines from the prompt, interprets it, and generally executes other commands. It runs by compiling all .c files in the repository to create an executable
 .SS Path Search
