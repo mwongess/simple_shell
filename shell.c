@@ -1,3 +1,7 @@
+/**
+ * Auth: Amos Mwongela Gabriel
+ *     : Oyebanji Olawale Amzat
+ */
 #include "shell.h"
 
 void shell(int ac, char **av, char **env)
