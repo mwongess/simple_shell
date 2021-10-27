@@ -1,6 +1,6 @@
 /**
  * search_cwd - look for current working dir
- * @filename: file name
+ * filename: search_cwd.c
  * Return: current working dir
  */
 
