@@ -1,6 +1,6 @@
 /**
  * File: shell.h
- * This code defines the header filefor shell
+ * This code defines the header file for shell
  */
 
 #ifndef SHELL
