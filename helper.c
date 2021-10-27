@@ -1,4 +1,7 @@
 /**
+ * Auth: Amos Mwongela Gabriel
+ *     : Oyebanji Olawale Amzat
+ *
  * _getline -it Gets line from the  user input
  * Return: Pointer to the buffer of user input
  */
