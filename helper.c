@@ -1,132 +1,155 @@
-/**
- * Auth: Amos Mwongela Gabriel
- *     : Oyebanji Olawale Amzat
- *
- * _getline -it Gets line from the  user input
- * Return: Pointer to the buffer of user input
- */
-
 #include "shell.h"
 
-char *_getline(void)
-{
-	int temp;
-	char *line = NULL;
-	size_t size = 0;
+void free_args(char **args, char **front);
+char *get_pid(void);
+char *get_env_value(char *beginning, int len);
+void variable_replacement(char **args, int *exe_ret);
 
-	temp = getline(&line, &size, stdin);
-	if (temp == EOF)
-	{
-		if (isatty(STDIN_FILENO))
-			write(1, "\n", 1);
-		exit(0);
-	}
-	return (line);
-}
 /**
- * split_line - Splits line into args
- * @line: Line of user input
- * Return: Array of args of user input
+ * free_args - Frees up memory taken by args.
+ * @args: A null-terminated double pointer containing commands/arguments.
+ * @front: A double pointer to the beginning of args.
  */
-char **split_line(char *line)
+void free_args(char **args, char **front)
 {
-	size_t buffer_size = TOKENS_BUFFER_SIZE;
-	char **tokens = malloc(sizeof(char *) * buffer_size);
-	char *token;
-	int pos = 0;
+	size_t i;
 
-	if (!tokens)
-	{
-		perror("Could not allocate space for tokens\n");
-		exit(0);
-	}
-	token = strtok(line, TOKEN_DELIMITERS);
-	while (token)
-	{
-		tokens[pos] = token;
-		token = strtok(NULL, TOKEN_DELIMITERS);
-		pos++;
-	}
-	tokens[pos] = NULL;
-	return (tokens);
+	for (i = 0; args[i] || args[i + 1]; i++)
+		free(args[i]);
+
+	free(front);
 }
-/**
- * check_for_builtins - Checks for builtins
- * @args: Arguments passed from prompt
- * @line: Buffer with line of input from user
- * @env: Environment
- * Return: 1 if builtins exist, 0 if they don't
- */
-int check_for_builtins(char **args, char *line, char **env)
-{
-	builtins_t list[] = {
-		{"exit", exit_shell},
-		{"env", env_shell},
-		{NULL, NULL}
-	};
-	int i;
 
-	for (i = 0; list[i].arg != NULL; i++)
+/**
+ * get_pid - Gets the current process ID.
+ * Description: Opens the stat file, a space-delimited file containing
+ *              information about the current process. The PID is the
+ *              first word in the file. The function reads the PID into
+ *              a buffer and replace the space at the end with a \0 byte.
+ *
+ * Return: The current process ID or NULL on failure.
+ */
+char *get_pid(void)
+{
+	size_t i = 0;
+	char *buffer;
+	ssize_t file;
+
+	file = open("/proc/self/stat", O_RDONLY);
+	if (file == -1)
 	{
-		if (_strcmp(list[i].arg, args[0]) == 0)
+		perror("Cant read file");
+		return (NULL);
+	}
+	buffer = malloc(120);
+	if (!buffer)
+	{
+		close(file);
+		return (NULL);
+	}
+	read(file, buffer, 120);
+	while (buffer[i] != ' ')
+		i++;
+	buffer[i] = '\0';
+
+	close(file);
+	return (buffer);
+}
+
+/**
+ * get_env_value - Gets the value corresponding to an environmental variable.
+ * @beginning: The environmental variable to search for.
+ * @len: The length of the environmental variable to search for.
+ *
+ * Return: If the variable is not found - an empty string.
+ *         Otherwise - the value of the environmental variable.
+ *
+ * Description: Variables are stored in the format VARIABLE=VALUE.
+ */
+char *get_env_value(char *beginning, int len)
+{
+	char **var_addr;
+	char *replacement = NULL, *temp, *var;
+
+	var = malloc(len + 1);
+	if (!var)
+		return (NULL);
+	var[0] = '\0';
+	_strncat(var, beginning, len);
+
+	var_addr = _getenv(var);
+	free(var);
+	if (var_addr)
+	{
+		temp = *var_addr;
+		while (*temp != '=')
+			temp++;
+		temp++;
+		replacement = malloc(_strlen(temp) + 1);
+		if (replacement)
+			_strcpy(replacement, temp);
+	}
+
+	return (replacement);
+}
+
+/**
+ * variable_replacement - Handles variable replacement.
+ * @line: A double pointer containing the command and arguments.
+ * @exe_ret: A pointer to the return value of the last executed command.
+ *
+ * Description: Replaces $$ with the current PID, $? with the return value
+ *              of the last executed program, and envrionmental variables
+ *              preceded by $ with their corresponding value.
+ */
+void variable_replacement(char **line, int *exe_ret)
+{
+	int j, k = 0, len;
+	char *replacement = NULL, *old_line = NULL, *new_line;
+
+	old_line = *line;
+	for (j = 0; old_line[j]; j++)
+	{
+		if (old_line[j] == '$' && old_line[j + 1] &&
+				old_line[j + 1] != ' ')
 		{
-			list[i].builtin(args, line, env);
-			return (1);
+			if (old_line[j + 1] == '$')
+			{
+				replacement = get_pid();
+				k = j + 2;
+			}
+			else if (old_line[j + 1] == '?')
+			{
+				replacement = _itoa(*exe_ret);
+				k = j + 2;
+			}
+			else if (old_line[j + 1])
+			{
+				/* extract the variable name to search for */
+				for (k = j + 1; old_line[k] &&
+						old_line[k] != '$' &&
+						old_line[k] != ' '; k++)
+					;
+				len = k - (j + 1);
+				replacement = get_env_value(&old_line[j + 1], len);
+			}
+			new_line = malloc(j + _strlen(replacement)
+					  + _strlen(&old_line[k]) + 1);
+			if (!line)
+				return;
+			new_line[0] = '\0';
+			_strncat(new_line, old_line, j);
+			if (replacement)
+			{
+				_strcat(new_line, replacement);
+				free(replacement);
+				replacement = NULL;
+			}
+			_strcat(new_line, &old_line[k]);
+			free(old_line);
+			*line = new_line;
+			old_line = new_line;
+			j = -1;
 		}
 	}
-	return (0);
-}
-/**
- * launch_prog - Forks and launches unix cmd
- * @args: Args for cmd
- * Return: 1 on success
- */
-int launch_prog(char **args)
-{
-	pid_t pid, wpid;
-	int status;
-
-	pid = fork();
-	if (pid == 0)
-	{
-		if (execve(args[0], args, NULL) == -1)
-		{
-			perror("Failed to execute command\n");
-			exit(0);
-		}
-	}
-	else if (pid < 0)
-	{
-		perror("Error forking\n");
-		exit(0);
-	}
-	else
-	{
-		do {
-			wpid = waitpid(pid, &status, WUNTRACED);
-		} while (!WIFEXITED(status) && WIFSIGNALED(status));
-	}
-	(void)wpid;
-	return (1);
-}
-/**
- * builtins_checker - Checks for builtins
- * @args: Arguments passed from prompt
- * Return: 1 if builtins exist, 0 if they don't
- */
-int builtins_checker(char **args)
-{
-	int i;
-	builtins_t list[] = {
-		{"exit", exit_shell},
-		{"env", env_shell},
-		{NULL, NULL}
-	};
-
-	for (i = 0; list[i].arg != NULL; i++)
-	{
-		if (_strcmp(list[i].arg, args[0]) == 0)
-			return (1);
-	}
-	return (0);
 }
