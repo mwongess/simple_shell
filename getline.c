@@ -1,7 +1,7 @@
 /*
  * File: getline.c
  * Auth: Amos Mwongela Gabriel
- *       Oyebanji
+ *       Oyebanji Olawale Amzat
  */
 
 #include "shell.h"
