@@ -1,7 +1,7 @@
 /*
  * File: getline.c
- * Auth: Alex Yu
- *       Brennan D Baraban
+ * Auth: Amos Mwongela Gabriel
+ *       Oyebanji
  */
 
 #include "shell.h"
