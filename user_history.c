@@ -1,6 +1,6 @@
 #include "shell.h"
 /**
- * authors:Amos Mwongela and Oyebanji
+ * authors:Amos Mwongela and Oyebanji Olawale Amzat
  * history - Fill File By User Input
  * @input: User Input
  * Return: -1 Fail 0 Succes
