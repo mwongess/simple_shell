@@ -1,7 +1,7 @@
 /*
  * File: input_helpers.c
  * Auth: Amos Mwowngela Gabriel
- *       Oyebanji
+ *       Oyebanji Olawale Amzat
  */
 
 #include "shell.h"
