@@ -1,6 +1,6 @@
 #include "shell.h"
 /**
- * authors:Amos Mwongela and Oyebanji
+ * authors:Amos Mwongela and Oyebanji Olawale Amzat
  * _strcmp - Compare Two String
  * @s1:String 1
  * @s2:String 2
