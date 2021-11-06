@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * authors:Amos Mwongela and Oyebanji
+ * authors:Amos Mwongela and Oyebanji Olawale Amzat
  * prompt - Display Shell Prompt
  */
 void prompt(void)
