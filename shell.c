@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * authors: Amos Mwongela & Oyebanji
+ * authors: Amos Mwongela & Oyebanji Olawale Amzat
  * main - Simple Shell (Hsh)
  *@ALX-school
  * @argc: Argument Count
