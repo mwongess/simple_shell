@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * authors:Amos Mwongelaa and Oyebanji
+ * authors:Amos Mwongelaa and Oyebanji Olawale Amzat
  * handle_builtin - Handle Builtin Command
  * @cmd: Parsed Command
  * @er:statue of last Excute
